@@ -1,0 +1,57 @@
+version: "3.3"
+services:
+   haproxy:
+    build: ./haproxy
+    ports:
+        - "80:80"
+    networks:
+      app_net:
+        ipv4_address: 192.168.120.10
+
+   web1:
+    image: phpmyadmin
+    restart: always
+    expose:
+      - "80"
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      app_net:
+        ipv4_address: 192.168.120.11
+
+   web2:
+    image: phpmyadmin
+    restart: always
+    expose:
+      - "80"
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      app_net:
+        ipv4_address: 192.168.120.12
+
+
+   mysql:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: passw0rd!
+      MYSQL_DATABASE: test
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypass
+    expose:
+      - "3306"
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    networks:
+      app_net:
+        ipv4_address: 192.168.120.13
+    restart: always
+
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.120.0/24
